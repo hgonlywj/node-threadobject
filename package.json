@@ -1,6 +1,6 @@
 {
   "name": "node-threadobject",
-  "version": "0.5.7",
+  "version": "0.5.9",
   "homepage": "https://github.com/classfellow/node-threadobject",
   "description": "let node support multi threads in js codes",
   "license": "BSD",
@@ -28,16 +28,14 @@
     "cpu-intensive",
     "cpu-bound task",
     "multi-thread",
-    "Hash",
-    "Sha",
+    "hash",
     "hmac",
-    "Ed25519",
+    "ed25519",
     "elliptic",
     "curve25519",
-    "EdDSA",
-    "crypto",
     "Block Chain",
-    "c++ closure"
+    "vm",
+    "v8"
   ],
   "author": {
     "name": "YouJia",

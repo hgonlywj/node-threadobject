@@ -53,11 +53,18 @@ namespace rcib {
     TYPE_SHA_256,
     TYPE_SHA = TYPE_SHA_256,
     TYPE_ED25519,
+    TYPE_VM,
     //...
     TYPE_END
   };
 
-  struct async_req {
+  class async_req {
+  public:
+    async_req() {
+      out = NULL;
+      isolate = NULL;
+      result = 0;
+    }
     std::string error;
     char *out;
     ssize_t result;
@@ -67,11 +74,19 @@ namespace rcib {
     WORKTYPE w_t;
   };
 
+  /*A thread - safe allocator
+  */
   class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
   public:
     virtual void* Allocate(size_t length);
     virtual void* AllocateUninitialized(size_t length);
     virtual void Free(void* data, size_t);
+  };
+
+  class Param {
+  public:
+    Param() {}
+    virtual ~Param(){}
   };
 
   class RcibHelper {
@@ -83,6 +98,7 @@ namespace rcib {
     static void DoNopAsync(async_req* r);
     static void DoNopAsync(async_req* r, size_t size);
     static void EMark(async_req* req, std::string message);
+    static void EMark2(async_req* req, std::string message);
     static void init_async_req(async_req *req);
 
     void Init();

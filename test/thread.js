@@ -1,18 +1,18 @@
 'use strict';
-let path = require('path');
-let assert = require('assert');
-let Thread = require('../index.js');
+var path = require('path');
+var assert = require('assert');
+var Thread = require('../index.js');
 
 describe('exports', function () {
   describe('.Thread', function () {
-    let filename = path.join(__dirname
+    var filename = path.join(__dirname
             , 'file_' + new Date().getTime() + '.dat');
 
-    let thread = new Thread(); 
+    var thread = new Thread(); 
 
     it('should create a new thread and can be closed', function () {
       // the same new Thread();
-      let thread = new Thread();
+      var thread = new Thread();
       assert.equal(thread.isRunning(), true);
       thread.close();
       assert.equal(thread.isRunning(), false);
@@ -70,7 +70,7 @@ describe('exports', function () {
       thread.initPrint(filename, function(err){
          assert.ifError(err);
       })
-      let firstsize;
+      var firstsize;
       thread.bytes(function(err, size){
          assert.ifError(err);
          firstsize = size;

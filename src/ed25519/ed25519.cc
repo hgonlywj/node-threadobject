@@ -13,11 +13,6 @@ Ed25519Data::Ed25519Data(){
   _mlen = 0;
 }
 
-void Ed25519Re::Dec(){
-  if (_thr.get()){
-    _thr->DecComputational();
-  }
-}
 // constructor
 Ed25519Helper::Ed25519Helper(){
 }

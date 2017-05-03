@@ -21,11 +21,10 @@ HashHelper* HashHelper::GetInstance(){
 
 //static
 void HashHelper::HashClean(void *data, base::WeakPtr<base::Thread>& thread){
-  free(data);  // to free mem
+  // to free mem
+  if (data) free(data);
   // to dec num of tasks in this thr
-  if (thread.get()){
-    thread->DecComputational();
-  }
+  if (thread.get()) thread->DecComputational();
 }
 
 //static
@@ -76,10 +75,10 @@ void HashHelper::SHA(int type, const HashData &data, rcib::async_req * req){
       sha384((uint8_t *)p, (unsigned int)plen, hre->_data);
     }
     req->result = hre->_len;
-    rcib::RcibHelper::GetInstance()->Uv_Send(req, NULL);
   }else{
-    rcib::RcibHelper::EMark(req, std::string("type should be 256/384/512"));
+    rcib::RcibHelper::EMark2(req, std::string("type should be 256/384/512"));
   }
+  rcib::RcibHelper::GetInstance()->Uv_Send(req, NULL);
 }
 
 void HashHelper::Hmac(int type, const HashData& data, rcib::async_req * req){
@@ -119,8 +118,8 @@ void HashHelper::Hmac(int type, const HashData& data, rcib::async_req * req){
         hre->_data, SHA384_DIGEST_SIZE);
     }
     req->result = hre->_len;
-    rcib::RcibHelper::GetInstance()->Uv_Send(req, NULL);
   }else{
-    rcib::RcibHelper::EMark(req, std::string("type should be 256/384/512"));
+    rcib::RcibHelper::EMark2(req, std::string("type should be 256/384/512"));
   }
+  rcib::RcibHelper::GetInstance()->Uv_Send(req, NULL);
 }

@@ -5,6 +5,7 @@
 #include "rcib_object.h"
 #include "hash/hash.h"
 #include "ed25519/ed25519.h"
+#include "vm/vm.h"
 
 #define ONE ((char*)1)
 #define TWO ((char *)2)
@@ -63,8 +64,6 @@ namespace rcib {
           argc = 2;
           HashRe *hre = reinterpret_cast<HashRe *>(req->out);
           argv[1] = node::Encode(isolate, reinterpret_cast<char *>(hre->_data), hre->_len, hre->_encoding);
-          assert(hre->_fclean);
-          (*(hre->_fclean))(hre->_data, hre->_thr);
           delete hre;
           req->out = nullptr;  // should be set null
         }
@@ -79,10 +78,18 @@ namespace rcib {
           else {
             argv[1] = v8::Boolean::New(isolate, req->result);
           }
-          hre->Dec();
           delete hre;
           req->out = nullptr;  // should be set null
         }
+        break;
+      case TYPE_VM:{
+        argv[0] = v8::Null(isolate);
+        argc = 2;
+        VMRe *hre = reinterpret_cast<VMRe *>(req->out);
+        argv[1] = v8::String::NewFromUtf8(isolate, (char *)(hre->_data));
+        delete hre;
+        req->out = nullptr;  // should be set null
+      }
         break;
         default: {
           argv[0] = v8::Null(isolate);
@@ -128,7 +135,6 @@ namespace rcib {
   //static
   void RcibHelper::DoNopAsync(async_req* req){
     req->result = 1;
-
     req->out = ONE;
   }
   //static
@@ -138,6 +144,16 @@ namespace rcib {
   }
   //static
   void RcibHelper::EMark(async_req* req, std::string message){
+    req->out = nullptr;
+    req->result = -1;
+    req->error = message;
+  }
+  //static
+  void RcibHelper::EMark2(async_req* req, std::string message){
+    if (req->out){
+      Param *hre = reinterpret_cast<Param *>(req->out);
+      delete hre;
+    }
     req->out = nullptr;
     req->result = -1;
     req->error = message;
@@ -154,7 +170,6 @@ namespace rcib {
   }
 
   void RcibHelper::Init(){
-    //TODO del 
     array_buffer_allocator_.Get();
     //init this
     handle_ = new async_t_handle;

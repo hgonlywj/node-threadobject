@@ -13,6 +13,8 @@ Node 在富计算场景下可能会遇到瓶颈(好比用一条腿走路)。 nod
 
 在具体的场景中，例如使用 node 构建区块链(Block chain)的 P2P 网络，协议使得主线程面临着 CPU 计算的压力，比方说计算大块数据的 HASH。未经扩展的 node 在此类情景下可能遇到瓶颈。node-threadobject 是解决此类问题的通用方法。
 
+同时，支持在新开的 V8 虚拟机里安全的运行一段 Js 代码。 
+
 `node-threadobject` is a package for providing ability to create new threads in js. It helps you consciously assign cpu-bound tasks to a limited number of CPUs.
 
 **[Follow me on github!](https://github.com/classfellow/node-threadobject)**
@@ -41,7 +43,7 @@ node-gyp build (or  **sudo node-gyp rebuild** )
 
 ## 增加更多的计算型函数 (Add more computational types of functions)
 
-有充足的空间，你可以很方便的添加新函数。这意味着一般来讲，只需要增加新的文件，然后将头文件增加到rcib.h中。hash 是一个例子，它是一个无状态型的计算任务，file 是另外一个例子。增加新的计算型函数不需要修改 rcib(run codes in background) 目录里面的代码。
+只需要增加新的文件，然后将头文件增加到rcib.h中。hash 是一个例子，它是一个无状态型的计算任务，file 是另外一个例子。增加新的计算型函数不需要修改 rcib(run codes in background) 目录里面的代码。
 
 src/rcib 这个目录下的代码经过精心构建，通常扩展本模块不需要动里面的东西。
 
@@ -167,6 +169,37 @@ result:
 */
 ```
 
+**使用 V8 虚拟机运行一段 Js 代码**
+```
+'use strict';
+const Thread = require('node-threadobject');
+var assert = require('assert');
+
+var thread = new Thread();
+
+var codeMain = `
+function main(v){
+	v = JSON.parse(v);
+  return v.a + v.b;
+}
+`;
+
+thread.runCode(codeMain, JSON.stringify({
+        a: 5,
+        b: 100
+      }), function(err, res){
+        assert.ifError(err);
+        console.log(res);
+});
+
+/*
+result:
+
+105
+*/
+
+```
+
 ## 压力测试 (Pressure test report)
 ```js
 /*
@@ -218,6 +251,7 @@ numOfTasks  //线程队列里CPU密集型任务个数
 makeKeypair // 使用 Ed25519 生成密钥对
 Sign // 使用 Ed25519 签名 Ed25519-DSA
 Verify // 验证
+runCode //使用 V8 虚拟机运行 js
 ```
 
 ## Other example

@@ -70,7 +70,8 @@
         'src/ed25519/ed25519/fe_frombytes.c',
         'src/ed25519/ed25519/fe_pow22523.c',
         'src/ed25519/ed25519/sc_reduce.c',
-        'src/ed25519/ed25519/sc_muladd.c'
+        'src/ed25519/ed25519/sc_muladd.c',
+        'src/vm/vm.cc'
     ],
     'conditions':[
             [

@@ -18,7 +18,7 @@ public:
   size_t _mlen;
 };
 
-class Ed25519Re {
+class Ed25519Re : public rcib::Param{
 public:
   enum SubTypes {
     NONE,
@@ -29,9 +29,9 @@ public:
     _thr = thr;
     _type = type;
   }
-  ~Ed25519Re(){
+  virtual ~Ed25519Re(){
+    if (_thr.get()) _thr->DecComputational();
   }
-  void Dec();
   unsigned char data[64];
   base::WeakPtr<base::Thread> _thr;
   SubTypes _type;

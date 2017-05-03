@@ -9,6 +9,7 @@
 #include "delayed/delayed.h"
 #include "file/file.h"
 #include "ed25519/ed25519.h"
+#include "vm/vm.h"
 
 using namespace rcib;
 
@@ -298,6 +299,26 @@ static void Verify(const v8::FunctionCallbackInfo<v8::Value>& args) {
   RETURN_TRUE
 }
 
+void RunCode(const v8::FunctionCallbackInfo<v8::Value>& args){
+  ISOLATE(args);
+  if (args.Length() != 3 || !args[0]->IsString() || !args[1]->IsString()
+    || !args[2]->IsFunction()) {
+    TYPEERROR;
+  }
+  THREAD;  // if thread is not be created, return false in js
+  v8::String::Utf8Value code(args[0]);
+  v8::String::Utf8Value param(args[1]);
+  std::string strCode = *code;
+  std::string strParam = *param;
+  INITHELPER(args, 2);
+  req->w_t = TYPE_VM;
+  req->out = (char*)(new VMRe(thr->AsWeakPtr()));
+  thr->message_loop()->PostTask(base::Bind(base::Unretained(VmHelper::GetInstance()),
+    &VmHelper::RunCode, strCode, strParam, req));
+  thr->IncComputational();
+  RETURN_TRUE
+}
+
 void Terminate(const v8::FunctionCallbackInfo<v8::Value>& args) {
   RcibHelper::GetInstance()->Terminate();
 }
@@ -328,6 +349,7 @@ inline void NODE_CREATE_FUNCTION(const TypeName& target) {
     NODE_SET_PROTOTYPE_METHOD(t, "makeKeypair", MakeKeypair);
     NODE_SET_PROTOTYPE_METHOD(t, "sign", Sign);
     NODE_SET_PROTOTYPE_METHOD(t, "verify", Verify);
+    NODE_SET_PROTOTYPE_METHOD(t, "runCode", RunCode);
 
     target->Set(v8::String::NewFromUtf8(isolate, "THREAD")
       , t->GetFunction());
