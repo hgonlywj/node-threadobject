@@ -13,6 +13,8 @@ Node 在富计算场景下可能会遇到瓶颈(好比用一条腿走路)。 nod
 
 在具体的场景中，例如使用 node 构建区块链(Block chain)的 P2P 网络，协议使得主线程面临着 CPU 计算的压力，比方说计算大块数据的 HASH。未经扩展的 node 在此类情景下可能遇到瓶颈。node-threadobject 是解决此类问题的通用方法。
 
+此外，对于数据密集型业务，有可能引起频繁 GC，无法有效利用内存，例如 Buffer 与 String 的互转。如果考虑使用原生模块的技术处理，可有效减轻引擎负担。
+
 同时，支持在新开的 V8 虚拟机里安全的运行一段 Js 代码。 
 
 `node-threadobject` is a package for providing ability to create new threads in js. It helps you consciously assign cpu-bound tasks to a limited number of CPUs.
