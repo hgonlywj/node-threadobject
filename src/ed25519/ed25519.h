@@ -26,8 +26,9 @@ public:
     VERIFY
   };
   explicit Ed25519Re(base::WeakPtr<base::Thread> thr, SubTypes type){
-    _thr = thr;
     _type = type;
+    _thr = thr;
+    if(thr.get()) thr->IncComputational();
   }
   virtual ~Ed25519Re(){
     if (_thr.get()) _thr->DecComputational();

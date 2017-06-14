@@ -120,8 +120,6 @@ namespace rcib {
   }
   //static
   void RcibHelper::AfterAsync(uv_async_t* h){
-    async_t_handle *realh = reinterpret_cast<async_t_handle*>(h);
-
     RcibHelper::GetInstance()->PickFinished();
 
     async_req * req = nullptr;

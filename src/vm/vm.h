@@ -8,8 +8,9 @@
 class VMRe : public rcib::Param {
 public:
   explicit VMRe(base::WeakPtr<base::Thread> thr){
-    _thr = thr;
     _data = nullptr;
+    _thr = thr;
+    if(thr.get()) thr->IncComputational();
   }
   virtual ~VMRe(){
     // to free mem

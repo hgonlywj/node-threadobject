@@ -27,6 +27,8 @@ public:
     _encoding(node::HEX){
     _fclean = f;
     _thr = thr;
+    if(thr.get())
+      thr->IncComputational();
   }
   virtual ~HashRe(){
     assert(_fclean);

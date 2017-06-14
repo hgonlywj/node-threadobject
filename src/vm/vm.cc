@@ -39,7 +39,8 @@ void VmHelper::RunCode(const std::string &code, const std::string &param, rcib::
     // Enter the context for compiling and running the hello world script.
     v8::Context::Scope context_scope(context);
 
-    v8::TryCatch catcher;
+    v8::TryCatch catcher(isolate);
+    catcher.SetVerbose(false);
     // Create a string containing the JavaScript source code.
     v8::Local<v8::String> source =
       v8::String::NewFromUtf8(isolate, code.c_str());

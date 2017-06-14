@@ -137,7 +137,7 @@ static void Sha2(const v8::FunctionCallbackInfo<v8::Value>& args) {
   ISOLATE(args);
   if (args.Length() != 3
       || !args[0]->IsNumber()
-      || !(args[1]->IsString() || args[1]->IsUint8Array())  // should be a string or a buffer
+      || !(args[1]->IsString() || node::Buffer::HasInstance(args[1]))  // should be a string or a buffer
       || !args[2]->IsFunction()) {
     TYPEERROR;
   }
@@ -161,8 +161,8 @@ static void Sha2(const v8::FunctionCallbackInfo<v8::Value>& args) {
     HashHelper::RetType(encoding, hre->_encoding);
   }
   thr->message_loop()->PostTask(base::Bind(base::Unretained(HashHelper::GetInstance()),
-    &HashHelper::SHA, args[0]->ToInt32()->Value(), data, req));
-  thr->IncComputational();
+    &HashHelper::SHA, args[0]->TOINT32(isolate), data, req));
+
   RETURN_TRUE
 }
 
@@ -170,8 +170,8 @@ static void Hmac(const v8::FunctionCallbackInfo<v8::Value>& args) {
   ISOLATE(args);
   if (args.Length() != 4
     || !args[0]->IsNumber()
-    || !(args[1]->IsString() || args[1]->IsUint8Array())  // should be a string or a buffer
-    || !(args[2]->IsString() || args[2]->IsUint8Array())  // should be a string or a buffer
+    || !(args[1]->IsString() || node::Buffer::HasInstance(args[1]))  // should be a string or a buffer
+    || !(args[2]->IsString() || node::Buffer::HasInstance(args[2]))  // should be a string or a buffer
     || !args[3]->IsFunction()) {
     TYPEERROR;
   }
@@ -202,8 +202,8 @@ static void Hmac(const v8::FunctionCallbackInfo<v8::Value>& args) {
     HashHelper::RetType(encoding, hre->_encoding);
   }
   thr->message_loop()->PostTask(base::Bind(base::Unretained(HashHelper::GetInstance()),
-    &HashHelper::Hmac, args[0]->ToInt32()->Value(), data, req));
-  thr->IncComputational();
+    &HashHelper::Hmac, args[0]->TOINT32(isolate), data, req));
+
   RETURN_TRUE
 }
 
@@ -216,7 +216,7 @@ static void QueueNum(const v8::FunctionCallbackInfo<v8::Value>& args) {
 static void MakeKeypair(const v8::FunctionCallbackInfo<v8::Value>& args) {
   ISOLATE(args);
   if (args.Length() != 1
-    || !args[0]->IsUint8Array()
+    || !node::Buffer::HasInstance(args[0])
     || node::Buffer::Length(args[0]) != 32 ){
     TYPEERROR2(MakeKeypair requires a 32 byte buffer);
   }
@@ -238,8 +238,9 @@ static void MakeKeypair(const v8::FunctionCallbackInfo<v8::Value>& args) {
 static void Sign(const v8::FunctionCallbackInfo<v8::Value>& args) {
   ISOLATE(args);
   if (args.Length() != 3
-    || !args[0]->IsUint8Array()
-    || !(args[1]->IsUint8Array() || (args[1]->IsObject() && !node::Buffer::HasInstance(args[1])))
+    || !node::Buffer::HasInstance(args[0])
+    || !(node::Buffer::HasInstance(args[1]) || 
+          (args[1]->IsObject() && !node::Buffer::HasInstance(args[1])))
     || !args[2]->IsFunction()){
     TYPEERROR2(Sign requires(Buffer, { Buffer(32 or 64) | keyPair object }, callback|1));
   }
@@ -268,7 +269,7 @@ static void Sign(const v8::FunctionCallbackInfo<v8::Value>& args) {
   req->out = (char*)(new Ed25519Re(thr->AsWeakPtr(), Ed25519Re::SIGN));
   thr->message_loop()->PostTask(base::Bind(base::Unretained(Ed25519Helper::GetInstance()),
     &Ed25519Helper::Sign, data, req));
-  thr->IncComputational();
+
   RETURN_TRUE
 }
 
@@ -276,9 +277,9 @@ static void Verify(const v8::FunctionCallbackInfo<v8::Value>& args) {
   ISOLATE(args);
   Ed25519Data data;
   if (args.Length() != 4
-    || !args[0]->IsUint8Array()
-    || !args[1]->IsUint8Array()
-    || !args[2]->IsUint8Array()
+    || !node::Buffer::HasInstance(args[0])
+    || !node::Buffer::HasInstance(args[1])
+    || !node::Buffer::HasInstance(args[2])
     || !args[3]->IsFunction()){
     TYPEERROR2(Verify requires(Buffer, Buffer(64), Buffer(32), callback));
   }
@@ -295,7 +296,7 @@ static void Verify(const v8::FunctionCallbackInfo<v8::Value>& args) {
   req->out = (char*)(new Ed25519Re(thr->AsWeakPtr(), Ed25519Re::VERIFY));
   thr->message_loop()->PostTask(base::Bind(base::Unretained(Ed25519Helper::GetInstance()),
     &Ed25519Helper::Verify, data, req));
-  thr->IncComputational();
+
   RETURN_TRUE
 }
 
@@ -315,7 +316,7 @@ void RunCode(const v8::FunctionCallbackInfo<v8::Value>& args){
   req->out = (char*)(new VMRe(thr->AsWeakPtr()));
   thr->message_loop()->PostTask(base::Bind(base::Unretained(VmHelper::GetInstance()),
     &VmHelper::RunCode, strCode, strParam, req));
-  thr->IncComputational();
+
   RETURN_TRUE
 }
 

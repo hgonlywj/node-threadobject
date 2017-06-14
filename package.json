@@ -1,6 +1,6 @@
 {
   "name": "node-threadobject",
-  "version": "0.5.10",
+  "version": "0.5.12",
   "homepage": "https://github.com/classfellow/node-threadobject",
   "description": "let node support multi threads in js codes",
   "license": "BSD",
@@ -46,9 +46,6 @@
       "name": "YouJia",
       "nickname": "Banz",
       "email": "classfellow@qq.com"
-    },
-    {
-      "name": "Dave Akers"
     }
   ],
   "gypfile": true,
