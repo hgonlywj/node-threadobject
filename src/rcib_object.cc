@@ -102,6 +102,8 @@ namespace rcib {
     }
 
     v8::TryCatch try_catch(isolate);
+    try_catch.SetVerbose(false);
+
     v8::Local<v8::Function> callback =
       v8::Local<v8::Function>::New(isolate, req->callback);
     callback->Call(isolate->GetCurrentContext()->Global(), argc, argv);
