@@ -19,10 +19,6 @@
  * IN THE SOFTWARE.
  */
 
-/* 
-   "license": "BSD"
-*/
-
 #ifdef _WIN32
 #include <windows.h>
 #else

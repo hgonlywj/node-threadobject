@@ -1,7 +1,3 @@
-/* 
-   "license": "BSD"
-*/
-
 #ifndef RCIB_DELAYED_
 #define RCIB_DELAYED_
 

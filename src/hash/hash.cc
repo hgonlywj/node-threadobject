@@ -1,7 +1,3 @@
-/* 
-   "license": "BSD"
-*/
-
 #include "../rcib.h"
 #include "hash.h"
 #include "sha/hmac_sha.h"

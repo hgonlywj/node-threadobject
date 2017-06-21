@@ -18,10 +18,6 @@
  * IN THE SOFTWARE.
  */
 
-/* 
-   "license": "BSD"
-*/
-
 #ifndef MUL_THREAD_
 #define MUL_THREAD_
 

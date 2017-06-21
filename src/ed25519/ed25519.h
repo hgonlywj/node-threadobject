@@ -1,7 +1,3 @@
-/* 
-   "license": "BSD"
-*/
-
 #ifndef RCIB_ED25519_
 #define RCIB_ED25519_
 

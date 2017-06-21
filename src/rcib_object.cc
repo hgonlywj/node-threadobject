@@ -1,7 +1,3 @@
-/* 
-   "license": "BSD"
-*/
-
 #include "rcib_object.h"
 #include "hash/hash.h"
 #include "ed25519/ed25519.h"

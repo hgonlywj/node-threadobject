@@ -19,10 +19,6 @@
  * IN THE SOFTWARE.
  */
 
-/* 
-   "license": "BSD"
-*/
-
 #ifndef MUL_WAITABLE_EVENT_
 #define MUL_WAITABLE_EVENT_
 

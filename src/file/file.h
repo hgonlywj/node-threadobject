@@ -1,7 +1,3 @@
-/* 
-   "license": "BSD"
-*/
-
 #ifndef RCIB_FILE_
 #define RCIB_FILE_
 

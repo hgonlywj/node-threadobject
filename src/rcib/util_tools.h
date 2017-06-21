@@ -18,10 +18,6 @@
  * IN THE SOFTWARE.
  */
 
-/* 
-   "license": "BSD"
-*/
-
 #ifndef MUL_UTIL_TOOL_
 #define MUL_UTIL_TOOL_
 

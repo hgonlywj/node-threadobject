@@ -18,10 +18,6 @@
  * IN THE SOFTWARE.
  */
 
-/* 
-   "license": "BSD"
-*/
-
 #ifndef THREAD_LOCAL_
 #define THREAD_LOCAL_
 

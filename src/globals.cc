@@ -18,10 +18,6 @@
  * IN THE SOFTWARE.
  */
 
-/* 
-   "license": "BSD"
-*/
-
 #include "rcib.h"
 
  namespace rcib{

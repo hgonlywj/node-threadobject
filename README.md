@@ -251,8 +251,8 @@ sha2  //SHA {256, 384, 512}
 hmac  // {256, 384, 512}
 numOfTasks  //线程队列里CPU密集型任务个数
 makeKeypair // 使用 Ed25519 生成密钥对
-Sign // 使用 Ed25519 签名 Ed25519-DSA
-Verify // 验证
+sign // 使用 Ed25519 签名 Ed25519-DSA
+verify // 验证
 runCode //使用 V8 虚拟机运行 js
 ```
 

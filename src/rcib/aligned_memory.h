@@ -31,10 +31,6 @@
 //   scoped_ptr_malloc<float, ScopedPtrAlignedFree> my_array(
 //       static_cast<float*>(AlignedAlloc(size, alignment)));
 
-/* 
-   "license": "BSD"
-*/
-
 #ifndef BASE_MEMORY_ALIGNED_MEMORY_H_
 #define BASE_MEMORY_ALIGNED_MEMORY_H_
 
