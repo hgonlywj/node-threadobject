@@ -63,7 +63,6 @@ npm install node-threadobject (or  **sudo npm install node-threadobject** )
 **将一个定时器抛给线程对象，等待2秒钟后，回到主线程执行回调函数。内部使用64位表示时间，支持以小时为单位的大定时器**
 ```js
 var Thread = require('node-threadobject');
-
 var thread = new Thread();
 
 thread.delayBySec(2, function(err){
@@ -91,15 +90,16 @@ result:
  see test/example/sha2.js
 */
 'use strict';
-let path = require('path');
+
+var path = require('path');
 var fs = require('fs');
-let assert = require('assert');
-let Thread = require('node-threadobject');
+var assert = require('assert');
+var Thread = require('node-threadobject');
 var thread = new Thread();
 thread.set_encode('base64');
 
 console.log('HASH 计算之前');
-fs.readFile('test/thread.js', function(err, data) {
+fs.readFile('./test/thread.js', function(err, data) {
   thread.sha2({data, type: 256}, function(err, data){
     if(err) return console.error(err);
     console.log('HASH 计算结果');
@@ -115,21 +115,49 @@ result:
     HASH 计算之前
     正在排队处理的任务数：1
     HASH 计算结果
-    eRwDcKFAuIGDYiH2nGZLQwYX3dji8T5O969CXqo/IxM=
+    drK1C69gYX9I8qYOwWFPQLIo6FU/F++N/B9Rs5JsnYQ=
     HASH 计算之后
     正在排队处理的任务数：0
 */
 ```
+
+**上个例子的 Promise 版本**
+```js
+'use strict';
+
+var path = require('path');
+var fs = require('fs');
+var assert = require('assert');
+var Thread = require('node-threadobject');
+const Promise = require('bluebird');
+const co = Promise.coroutine;
+
+var thread = new Thread();
+thread.set_encode('base64');
+
+fs.readFile('./test/thread.js', function(err, data) {
+  co(function*(){
+    var r = yield thread.sha2({data, type: 256});
+    console.log(r);
+  })();
+});
+
+/*
+  result:
+    drK1C69gYX9I8qYOwWFPQLIo6FU/F++N/B9Rs5JsnYQ=
+*/
+```
+
 **消息认证码(HMAC)**
 ```js
 /*
  see test/example/hmac.js
 */
 'use strict';
-let path = require('path');
+var path = require('path');
 var fs = require('fs');
-let assert = require('assert');
-let Thread = require('node-threadobject');
+var assert = require('assert');
+var Thread = require('node-threadobject');
 var crypto = require('crypto');
 var thread = new Thread();
 var key = '_random_key_';
@@ -157,11 +185,11 @@ result:
 see test/ed25519.js
 */
 
-"use strict";
+'use strict';
 const Thread = require('node-threadobject');
-let thread = new Thread();
+var thread = new Thread();
 
-thread.Sign(new Buffer('a message'), 'af9881fe34edfd3463cf3e14e22ad95a0608967e084d3ca1fc57be023040de59', function(err, data){
+thread.sign(new Buffer('a message'),'af9881fe34edfd3463cf3e14e22ad95a0608967e084d3ca1fc57be023040de59', function(err, data){
   console.log(data.toString('hex'));
 });
 
@@ -172,7 +200,7 @@ result:
 ```
 
 **使用 V8 虚拟机运行一段 Js 代码**
-```
+```js
 'use strict';
 const Thread = require('node-threadobject');
 var assert = require('assert');
@@ -209,7 +237,7 @@ result:
 */
 'use strict';
 var fs = require('fs');
-let Thread = require('node-threadobject');
+var Thread = require('node-threadobject');
 var thread = new Thread();
 thread.set_encode('base64');
 
@@ -230,10 +258,23 @@ fs.readFile('./mem-pressure-test', function(err, data){
 
 > After 30 mins of running, mem usage maintained at 12M.
 
-## Push list
+## Benchmarks
+多核电脑上，计算一个大文件的消息认证码，总计算量一致时，使用 threadobject 创建两个线程可以使得时间节约 50%
 ```
-0.5.4 -> fixed compile errors for node v7
-0.5.5 -> add ed25519 | fix maintain buffer
+// benchmarks/slow.js 只使用一个线程计算
+const thread = new Thread();
+var r = yield Promise.all([
+        thread.hmac({data, type: 384, key}),
+        thread.hmac({data, type: 512, key})
+      ]);
+
+// benchmarks/fast.js 委托给两个线程分别计算
+const thread1 = new Thread();
+const thread2 = new Thread();
+var r = yield Promise.all([
+        thread1.hmac({data, type: 384, key}),
+        thread2.hmac({data, type: 512, key})
+      ]);
 ```
 
 ## 已包含的方法 (APIs)
@@ -252,7 +293,7 @@ hmac  // {256, 384, 512}
 numOfTasks  //线程队列里CPU密集型任务个数
 makeKeypair // 使用 Ed25519 生成密钥对
 sign // 使用 Ed25519 签名 Ed25519-DSA
-verify // 验证
+verify // Ed25519 验证
 runCode //使用 V8 虚拟机运行 js
 ```
 

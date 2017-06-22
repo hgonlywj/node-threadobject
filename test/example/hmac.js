@@ -1,8 +1,8 @@
 'use strict';
-let path = require('path');
+var path = require('path');
 var fs = require('fs');
-let assert = require('assert');
-let Thread = require('./../../index.js');
+var assert = require('assert');
+var Thread = require('./../../index.js');
 var crypto = require('crypto');
 var thread = new Thread();
 var key = '_random_key_';

@@ -1,10 +1,11 @@
 'use strict';
-var path = require('path');
-var assert = require('assert');
-var Thread = require('../index.js');
+const path = require('path');
+const assert = require('assert');
+const Promise = require('bluebird');
+const co = Promise.coroutine;
+const Thread = require('../index.js');
 
 var thread = new Thread();
-
 var codeMain = `
 function main(v){
 	v = JSON.parse(v);
@@ -36,6 +37,15 @@ describe('exports', function () {
         assert.equal(res, 105);
         done();
       });
+    });
+
+    it('#codeMain()', function () {
+      return co(function*(){
+        var r = yield thread.runCode(codeMain, JSON.stringify({
+          a: 5, b: 100
+        }));
+        assert.equal(r, 105);
+      })();
     });
 
     it('test runCode, js codeMain_throw', function (done) {

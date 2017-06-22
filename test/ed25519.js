@@ -1,9 +1,12 @@
 'use strict';
-const crypto = require("crypto");
-const assert = require("assert");
-const Thread = require("../index.js");
 
-let thread = new Thread();
+const crypto = require('crypto');
+const assert = require('assert');
+const Thread = require('../index.js');
+const Promise = require('bluebird');
+const co = Promise.coroutine;
+
+var thread = new Thread();
 
 var data = {
   seed: "af9881fe34edfd3463cf3e14e22ad95a0608967e084d3ca1fc57be023040de59",
@@ -17,24 +20,22 @@ var data = {
 describe("ed25519", function() {
   describe("#MakeKeypair()", function () {
     it("returns a public and private key", function () {
-      var seed = new Buffer(data.seed, "hex")
+      var seed = new Buffer(data.seed, "hex");
       var keyPair = thread.makeKeypair(seed);
 
       assert.equal(
-        keyPair.publicKey.toString("hex"),
-        data.publicKey
-      );
+        keyPair.publicKey.toString("hex"), data.publicKey );
 
       assert.equal(
         keyPair.privateKey.toString("hex"), data.privateKey);
     });
   });
 
-  describe("#Sign()", function () {
+  describe("#sign()", function () {
     it("Generates a valid signature using a seed", function(done){
-      var seed = new Buffer(data.seed, "hex")
+      var seed = new Buffer(data.seed, "hex");
       var message = new Buffer(data.message);
-      thread.Sign(message, seed, function(err, signature){
+      thread.sign(message, seed, function(err, signature){
         if(err) console.error(err);
         assert.equal(signature.toString("hex"), data.signature);
         done();
@@ -42,14 +43,14 @@ describe("ed25519", function() {
     });
 
     it("Generates a valid signature using a keyPair", function(done){
-      var privateKey = new Buffer(data.privateKey, "hex")
-      var publicKey = new Buffer(data.publicKey, "hex")
+      var privateKey = new Buffer(data.privateKey, "hex");
+      var publicKey = new Buffer(data.publicKey, "hex");
       var message = new Buffer(data.message);
-      thread.Sign(
+      thread.sign(
         message,
         {
-          privateKey: privateKey,
-          publicKey: publicKey
+          privateKey,
+          publicKey
         },
         function(err, signature){
           assert.equal(signature.toString("hex"), data.signature);
@@ -59,25 +60,68 @@ describe("ed25519", function() {
     });
   });
 
-  describe("#Verify", function() {
+  describe('#sign()', function () {
+    it('Generates a valid signature using a seed', function(){
+      return co(function*(){
+        var seed = new Buffer(data.seed, 'hex');
+        var message = new Buffer(data.message);
+        var signature = yield thread.sign(message, seed);
+        assert.equal(signature.toString('hex'), data.signature);
+      })();
+    });
+
+    it("Generates a valid signature using a keyPair", function(){
+      return co(function*(){
+        var privateKey = new Buffer(data.privateKey, "hex");
+        var publicKey = new Buffer(data.publicKey, "hex");
+        var message = new Buffer(data.message);
+        var signature = yield thread.sign(message, {privateKey, publicKey});
+        assert.equal(signature.toString("hex"), data.signature);
+      })();
+    });
+  });
+
+  describe("#verify", function() {
     it("returns true if the signature is valid", function(done){
-      var publicKey = new Buffer(data.publicKey, "hex")
-      var signature = new Buffer(data.signature, "hex")
+      var publicKey = new Buffer(data.publicKey, "hex");
+      var signature = new Buffer(data.signature, "hex");
       var message = new Buffer(data.message);
-      thread.Verify(message, signature, publicKey, function(err, Is){
+      thread.verify(message, signature, publicKey, function(err, Is){
         assert.ok(Is);
         done();
       });
     });
 
     it("returns false if the signature is not valid", function(done){
-      var publicKey = new Buffer(data.publicKey, "hex")
-      var signature = new Buffer(data.invalidSignature, "hex")
+      var publicKey = new Buffer(data.publicKey, "hex");
+      var signature = new Buffer(data.invalidSignature, "hex");
       var message = new Buffer(data.message);
-      thread.Verify(message, signature, publicKey, function(err, Is){
+      thread.verify(message, signature, publicKey, function(err, Is){
         assert.ifError(Is);
         done();
       });
+    });
+  });
+
+  describe("#verify", function() {
+    it("returns true if the signature is valid", function(){
+      return co(function*(){
+        var publicKey = new Buffer(data.publicKey, "hex");
+        var signature = new Buffer(data.signature, "hex");
+        var message = new Buffer(data.message);
+        var r = yield thread.verify(message, signature, publicKey);
+        assert.ok(r);
+      })();
+    });
+
+    it("returns false if the signature is not valid", function(){
+      return co(function*(){
+        var publicKey = new Buffer(data.publicKey, "hex");
+        var signature = new Buffer(data.invalidSignature, "hex");
+        var message = new Buffer(data.message);
+        var r = yield thread.verify(message, signature, publicKey);
+        assert.ifError(r);
+      })();
     });
   })
 });

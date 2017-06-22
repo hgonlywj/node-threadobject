@@ -1,7 +1,25 @@
 'use strict';
+
 var path = require('path');
 var assert = require('assert');
 var Thread = require('../index.js');
+var Promise = require('bluebird');
+var co = Promise.coroutine;
+
+const data = `describe('exports', function () {
+  describe('.Thread', function () {
+    var thread = new Thread();
+
+    it('should create a new thread and can be closed', function () {
+      // the same new Thread();
+      var thread = new Thread();
+      assert.equal(thread.isRunning(), true);
+      thread.close();
+      assert.equal(thread.isRunning(), false);
+    });
+
+    it('should after 2 sec run the callback', function(done){
+`;
 
 describe('exports', function () {
   describe('.Thread', function () {
