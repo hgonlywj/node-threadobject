@@ -233,9 +233,10 @@ result:
 ## 压力测试 (Pressure test report)
 ```js
 /*
- see test/example/mem-pressure-test.js
+ see pressure-test/mem-pressure-test.js
 */
 'use strict';
+
 var fs = require('fs');
 var Thread = require('node-threadobject');
 var thread = new Thread();
@@ -254,9 +255,9 @@ fs.readFile('./mem-pressure-test', function(err, data){
   thread.sha2({data: fData, type: 256}, callback);
 });
 ```
-> On Win 7 x86-64bit & node-v6.9.1
+> On Win 7 x86-64bit & node-v8.1.0
 
-> After 30 mins of running, mem usage maintained at 12M.
+> After 30 mins of running, mem usage maintained at ~16M
 
 ## Benchmarks
 多核电脑上，计算一个大文件的消息认证码，总计算量一致时，使用 threadobject 创建两个线程可以使得时间节约 50%
